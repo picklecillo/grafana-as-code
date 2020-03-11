@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  grafana:
+    image: grafana/grafana:6.3.5
+    ports:
+      - 3000:3000
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
+      - ./dashboards:/var/lib/grafana/dashboards
+
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus_config.yml:/etc/prometheus/config.yml
+    entrypoint:
+      - prometheus
+      - --config.file=/etc/prometheus/config.yml
+      - --storage.tsdb.path=/prometheus  # defaults
+      - --web.console.libraries=/usr/share/prometheus/console_libraries  # defaults
+      - --web.console.templates=/usr/share/prometheus/consoles  # defaults
+
+  node_exporter:
+    image: 'quay.io/prometheus/node-exporter'
+    ports:
+      - 9100:9100
